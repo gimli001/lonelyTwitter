@@ -71,8 +71,26 @@ public class LonelyTwitterActivity extends Activity {
                 adapter.notifyDataSetChanged();
 
                 // Add the tweet to Elasticsearch
+                // At this point in the code we are adding a tweet to elastic search (But it is not sorted yet :( )
                 ElasticsearchTweetController.AddTweetTask addTweetTask = new ElasticsearchTweetController.AddTweetTask();
                 addTweetTask.execute(latestTweet);
+                // We want to show the user the sorted tweets.
+                // So we should get a list of tweets from elastic search.
+                // Then we should sort the list on our client before showing them to the user.
+                ElasticsearchTweetController.GetTweetsTask getTweetTask = new ElasticsearchTweetController.GetTweetsTask();
+                try {
+                    ArrayList<Tweet> tempTweets = new ArrayList<Tweet>();
+                    getTweetTask.execute("");
+                    tempTweets.addAll(getTweetTask.get());
+
+                    tweets.clear();
+                    tweets.addAll(tempTweets);
+                    adapter.notifyDataSetChanged();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();;
+                }
+
 
                 bodyText.setText("");
                 pictureButton.setImageResource(android.R.color.transparent);
